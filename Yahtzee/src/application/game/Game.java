@@ -23,9 +23,8 @@ import javafx.scene.text.Font;
 
 public class Game extends BorderPane{
 	private Scene scene;
-	private final ArrayList<Node> dice;
+	protected ArrayList<Dice> dice;
 	private static final String BACKGROUND = "background.jpg";
-	private Image[] dicePics;
 	private Button rollButton;
 	private double screenHeight,screenWidth;
 	private static double baseWidth ,baseHeight;
@@ -34,33 +33,20 @@ public class Game extends BorderPane{
 	private Group diceRolls;
 	private Image background;
 	private Scoresheet scoresheet;
-	private Table table;
+	protected Table table;
 	
 	public Game() {
-		dice = new ArrayList<Node>();
-		dice.add(new ImageView());
-		dice.add(new ImageView());
-		dice.add(new ImageView());
-		dice.add(new ImageView());
-		dice.add(new ImageView());
+		dice = new ArrayList<Dice>();
+		for(int i = 0;i<5;i++)
+			dice.add(new Dice((int)(Math.random()*6)+1,this));
 		
 		rollButton = new Button("Roll Dice");
 		rollButton.setOnAction(actionEvent-> {
 			rollDice();
 		});
 		
-		try {
-			dicePics = new Image[] {new Image(new FileInputStream("src/res/pics/dice1.png")),new Image(new FileInputStream("src/res/pics/dice2.png")),
-											new Image(new FileInputStream("src/res/pics/dice3.png")),new Image(new FileInputStream("src/res/pics/dice4.png")),
-											new Image(new FileInputStream("src/res/pics/DiceShell.png")),new Image(new FileInputStream("src/res/pics/dice6.png"))};
-		} catch (FileNotFoundException e) {
-			System.out.println("Error locating dice image files! Shutting Down!");
-		} 
-		for(Node d : dice) {
-			((ImageView) d).setFitHeight(100);
-			((ImageView) d).setFitWidth(100);
-			((ImageView) d).setPreserveRatio(true);
-		}
+		
+		
 		rollDice();	
 		
 	}
@@ -68,13 +54,20 @@ public class Game extends BorderPane{
 	public void rollDice() {
 		for(Node d : dice) {
 			int roll = (int)(Math.random()*6)+1;
-			((ImageView)d).setImage(dicePics[roll-1]);
+			((Dice)d).setValue(roll);
 		}
 	}
 	
 	
+	protected void addDice(Dice d) {
+		dice.add(d);
+		leftLayout.getChildren().add(d);
+	}
 	
-	
+	protected void removeDice(Dice d) {
+		dice.remove(d);
+		leftLayout.getChildren().remove(d);
+	}
 	
 	
 	
@@ -113,12 +106,9 @@ public class Game extends BorderPane{
 		diceRolls.setTranslateY(10*scaleFactorY);
 		diceRolls.setTranslateX(10*scaleFactorX);
 		
-		for(Node d : dice) {
+		for(Node d : dice) 
+			((Dice)d).rescaleSizes();
 
-			((ImageView) d).setFitHeight(100*scaleFactorY);
-			((ImageView) d).setFitWidth(100*scaleFactorX);
-			((ImageView) d).setPreserveRatio(true);
-		}
 		
 		rollButton.setTranslateY(548*scaleFactorY);
 		rollButton.setTranslateX(15*scaleFactorX);
@@ -131,6 +121,7 @@ public class Game extends BorderPane{
 		
 		scoresheet.rescaleSizes();
 		table.rescaleSizes();
+		
 	}
 	
 	
