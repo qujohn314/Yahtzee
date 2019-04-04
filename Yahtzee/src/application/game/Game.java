@@ -60,6 +60,7 @@ public class Game extends BorderPane{
 			if(d.getValue() >= 1 && d.getValue() <= 6)
 				d.roll();
 		}
+		table.renderDice();
 	}
 	
 	

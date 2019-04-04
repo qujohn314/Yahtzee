@@ -16,8 +16,12 @@ public class Dice extends ImageView{
 	protected boolean kept;
 	private static int idCount = 0;
 	private int id;
+	private double baseWidth, baseHeight;
 	public Dice(int v, Game g) {
 		value = v;
+		baseWidth = 100;
+		baseHeight = 100;
+		
 		game = g;
 		kept = true;
 		id = idCount++;
@@ -55,17 +59,27 @@ public class Dice extends ImageView{
 	}
 	
 	protected void rescaleSizes() {
-		this.setFitHeight(100*game.scaleFactorY);
-		this.setFitWidth(100*game.scaleFactorX);
+		this.setFitHeight(baseHeight*game.scaleFactorY);
+		this.setFitWidth(baseWidth*game.scaleFactorX);
 		
 	}
 	
+	protected void setBaseWidth(double w) {
+		baseWidth = w;
+		rescaleSizes();
+	}
+	
+	protected void setBaseHeight(double h) {
+		baseHeight = h;
+		rescaleSizes();
+	}
+	
 	protected double getWidth() {
-		return 100*game.scaleFactorX;
+		return baseWidth*game.scaleFactorX;
 	}
 
 	protected double getHeight() {
-		return 100*game.scaleFactorY;
+		return baseHeight*game.scaleFactorY;
 	}
 	
 	protected int getDiceId() {

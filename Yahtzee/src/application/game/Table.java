@@ -14,34 +14,41 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class Table extends Group{
 	private double baseHeight = 390;
 	private double baseWidth = 450;
-	private GridPane tableView;
+	private StackPane tableView;
+	private GridPane diceGrid;
 	private Game game;
 	private VBox container;
 	private ArrayList<Dice> fieldDice;
-	private BackgroundSize tablePic;
+	private ImageView tablePic;
 	
 	public Table(Game g) throws FileNotFoundException {
 		game = g;
 		container = new VBox(10);
-		tablePic = new BackgroundSize(baseWidth*game.scaleFactorX,baseHeight*game.scaleFactorY,false,false,false,true);
 		fieldDice = new ArrayList<Dice>();
 		Image scores = new Image(new FileInputStream("src/res/pics/table.png"));
-			
-		tableView = new GridPane();
-		tableView.setVgap(5);
-		tableView.setHgap(8);
-		tableView.setPadding(new Insets(0, 50, 0, 50));
+		tablePic = new ImageView(scores);
+		tablePic.setFitHeight(baseHeight * game.scaleFactorY);
+		tablePic.setFitWidth(baseWidth * game.scaleFactorX);
 		
-		tableView.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream("src/res/pics/table.png")),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,tablePic)));
+		tableView = new StackPane();
+		
+		diceGrid = new GridPane();
+		diceGrid.setHgap(5);
+		diceGrid.setVgap(5);
+		
+		tableView.getChildren().add(tablePic);
+		tableView.getChildren().add(diceGrid);
+	
 		container.getChildren().add(tableView);
 		this.getChildren().add(container);
-		//tableView.getChildren().add(tablePic);
+		
 		rescaleSizes();
 	
 	}
@@ -49,12 +56,13 @@ public class Table extends Group{
 	protected void rescaleSizes() {
 		this.setTranslateX(-380 * game.scaleFactorX);
 		this.setTranslateY(-35 * game.scaleFactorY);
-		tableView.setMinHeight(baseHeight * game.scaleFactorY);
-		tableView.setMinWidth(baseWidth * game.scaleFactorX);
+		
 		for(Dice d : fieldDice)
 			d.rescaleSizes();
-		tableView.setPadding(new Insets(0, 0, 0, (baseWidth*game.scaleFactorX/2)-((fieldDice.size()-1)*100*game.scaleFactorX)));
-		tablePic = new BackgroundSize(baseWidth*game.scaleFactorX,baseHeight*game.scaleFactorY,false,false,false,true);
+		
+		tablePic.setFitHeight(baseHeight * game.scaleFactorY);
+		tablePic.setFitWidth(baseWidth * game.scaleFactorX);
+		
 	}
 	
 	protected void renderDice() {
@@ -66,16 +74,19 @@ public class Table extends Group{
 	}
 	
 	protected void addDice(Dice d) {
+		d.setBaseHeight(80);
+		d.setBaseWidth(80);
 		fieldDice.add(d);
-		tableView.add(d, fieldDice.indexOf(d), 0);
-		tableView.setPadding(new Insets(0, 0, 0, (baseWidth*game.scaleFactorX/2)-((fieldDice.size()-1)*d.getWidth())));
+		diceGrid.setPadding(new Insets(25*game.scaleFactorY, 0, 0, (tablePic.getFitWidth()/2.3)-(d.getWidth()*(fieldDice.size()-1))));
+		diceGrid.add(d, fieldDice.indexOf(d), 0);
 	
 	}
 	
 	protected void removeDice(Dice d) {
+		d.setBaseHeight(100);
+		d.setBaseWidth(100);
 		fieldDice.remove(d);
-		tableView.getChildren().remove(d);
-		tableView.setPadding(new Insets(0, 0, 0, (baseWidth*game.scaleFactorX/2)-((fieldDice.size())*d.getWidth())));
+		diceGrid.getChildren().remove(d);
 	}
 	
 	
