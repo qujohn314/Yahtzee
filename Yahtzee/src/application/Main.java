@@ -16,7 +16,10 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Game game = new Game();
+			
+		//	System.out.println(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 			Scene scene = new Scene(game,800,600);
+			
 			
 			game.init(scene);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

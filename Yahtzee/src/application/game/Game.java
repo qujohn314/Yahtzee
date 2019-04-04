@@ -44,24 +44,38 @@ public class Game extends BorderPane{
 		rollButton.setOnAction(actionEvent-> {
 			rollDice();
 		});
-		
-		
+		scaleFactorX = screenWidth /  baseWidth;
+		scaleFactorY = screenHeight / baseHeight;
+		try {
+			table = new Table(this);
+		} catch (FileNotFoundException e1) {}
 		
 		rollDice();	
+		
 		
 	}
 	
 	public void rollDice() {
-		for(Node d : dice) {
-			int roll = (int)(Math.random()*6)+1;
-			((Dice)d).setValue(roll);
+		for(Dice d : table.getDice()) {
+			if(d.getValue() >= 1 && d.getValue() <= 6)
+				d.roll();
 		}
 	}
 	
 	
 	protected void addDice(Dice d) {
-		dice.add(d);
-		leftLayout.getChildren().add(d);
+		int index = 0;
+		if(d.getValue() >= 1 && d.getValue() <= 6)
+		for(int i = 0;i<dice.size();i++) {
+			if(dice.get(i).getValue() == 7) {
+				leftLayout.getChildren().set(i,d);
+				dice.set(i,d);
+				break;
+			}
+		}else {
+			dice.add(d);
+			leftLayout.getChildren().add(d);
+		}
 	}
 	
 	protected void removeDice(Dice d) {
@@ -118,6 +132,7 @@ public class Game extends BorderPane{
 		if(screenHeight < 451 || screenWidth < 300)
 			this.setBackground(new Background(new BackgroundImage(background,null,null,null,null)));
 		else this.setBackground(new Background(new BackgroundImage(background,BackgroundRepeat.ROUND,BackgroundRepeat.ROUND,null,null)));
+		
 		
 		scoresheet.rescaleSizes();
 		table.rescaleSizes();
@@ -189,9 +204,7 @@ public class Game extends BorderPane{
 		this.setBackground(new Background(new BackgroundImage(background,BackgroundRepeat.ROUND,BackgroundRepeat.ROUND,null,null)));
 		
 		diceRolls = new Group();
-		try {
-			table = new Table(this);
-		} catch (FileNotFoundException e1) {}
+		
 		diceRolls.getChildren().add(leftLayout);
 		diceRolls.getChildren().add(rollButton);
 		leftLayout.getChildren().addAll(dice);
@@ -204,5 +217,6 @@ public class Game extends BorderPane{
 			this.setCenter(table);
 			
 		rescaleSizes();
+		
 	}
 }

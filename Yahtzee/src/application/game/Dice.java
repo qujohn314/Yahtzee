@@ -32,14 +32,16 @@ public class Dice extends ImageView{
 			this.setImage(dicePics[v-1]);
 			this.setPreserveRatio(true);
 			this.addEventFilter(MouseEvent.MOUSE_CLICKED, event ->{
-				
-				if(kept && value > 0) {
-					game.table.addDice(this);
-					game.removeDice(this);
-					game.addDice(new Dice(7,game));
-					
-					for(Dice d : game.dice)
-						System.out.println(d.getValue());
+				if(value >= 1 && value <= 6) {
+					if(kept) {
+						game.table.addDice(this);
+						game.removeDice(this);
+						game.addDice(new Dice(7,game));
+					}else {
+						game.table.removeDice(this);
+						game.addDice(this);
+					}
+					kept = !kept;
 				}
 			});
 			rescaleSizes();
@@ -47,8 +49,9 @@ public class Dice extends ImageView{
 	
 	@Override
 	public boolean equals(Object d) {
-		return ((Dice)d).getDiceId() == this.id;
-		
+		if(d instanceof Dice)
+			return ((Dice)d).getDiceId() == this.id;
+		return false;
 	}
 	
 	protected void rescaleSizes() {
@@ -56,7 +59,15 @@ public class Dice extends ImageView{
 		this.setFitWidth(100*game.scaleFactorX);
 		
 	}
+	
+	protected double getWidth() {
+		return 100*game.scaleFactorX;
+	}
 
+	protected double getHeight() {
+		return 100*game.scaleFactorY;
+	}
+	
 	protected int getDiceId() {
 		return id;
 	}
@@ -68,6 +79,12 @@ public class Dice extends ImageView{
 	public void setValue(int v) {
 		this.setImage(dicePics[v-1]);
 		value = v;
+	}
+	
+	public int roll() {
+		int num = (int)(Math.random()*6)+1;
+		this.setImage(dicePics[num-1]);
+		return num;
 	}
 	
 }
