@@ -76,7 +76,7 @@ public class Table extends Group{
 		
 		tablePic.setFitHeight(baseHeight * game.scaleFactorY);
 		tablePic.setFitWidth(baseWidth * game.scaleFactorX);
-		diceGrid.setPadding(new Insets(25*game.scaleFactorY, 0, 0, 18*game.scaleFactorX));
+		diceGrid.setPadding(new Insets(20*game.scaleFactorY, 0, 0, 18*game.scaleFactorX));
 		diceGrid.setHgap(6*game.scaleFactorX);
 		diceGrid.setVgap(6*game.scaleFactorY);
 		
@@ -113,7 +113,7 @@ public class Table extends Group{
 		d.setBaseHeight(75,game.scaleFactorX,game.scaleFactorX);
 		d.setBaseWidth(75,game.scaleFactorX,game.scaleFactorX);
 		fieldDice.add(d);
-		diceGrid.setPadding(new Insets(25*game.scaleFactorY, 0, 0, 20*game.scaleFactorX));
+		diceGrid.setPadding(new Insets(20*game.scaleFactorY, 0, 0, 20*game.scaleFactorX));
 		diceGrid.getChildren().add(d);
 	
 	
