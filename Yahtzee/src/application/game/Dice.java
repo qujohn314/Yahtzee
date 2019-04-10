@@ -48,7 +48,7 @@ public class Dice extends ImageView{
 					kept = !kept;
 				}
 			});
-			rescaleSizes();
+			rescaleSizes(game.scaleFactorX,game.scaleFactorY);
 		}
 	
 	@Override
@@ -58,20 +58,20 @@ public class Dice extends ImageView{
 		return false;
 	}
 	
-	protected void rescaleSizes() {
-		this.setFitHeight(baseHeight*game.scaleFactorY);
-		this.setFitWidth(baseWidth*game.scaleFactorX);
+	protected void rescaleSizes(double scaleValueX, double scaleValueY) {
+		this.setFitHeight(baseHeight*scaleValueY);
+		this.setFitWidth(baseWidth*scaleValueX);
 		
 	}
 	
-	protected void setBaseWidth(double w) {
+	protected void setBaseWidth(double w,double scaleValueX, double scaleValueY) {
 		baseWidth = w;
-		rescaleSizes();
+		rescaleSizes(scaleValueX,scaleValueY);
 	}
 	
-	protected void setBaseHeight(double h) {
+	protected void setBaseHeight(double h,double scaleValueX, double scaleValueY) {
 		baseHeight = h;
-		rescaleSizes();
+		rescaleSizes(scaleValueX,scaleValueY);
 	}
 	
 	protected double getWidth() {

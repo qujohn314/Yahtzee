@@ -122,11 +122,11 @@ public class Game extends BorderPane{
 		diceRolls.setTranslateX(10*scaleFactorX);
 		
 		for(Node d : dice) 
-			((Dice)d).rescaleSizes();
+			((Dice)d).rescaleSizes(scaleFactorX,scaleFactorY);
 
 		
 		rollButton.setTranslateY(548*scaleFactorY);
-		rollButton.setTranslateX(15*scaleFactorX);
+		rollButton.setTranslateX(20*scaleFactorX);
 		leftLayout.setPrefHeight(800 * scaleFactorY);
 		leftLayout.setPrefWidth(500 * scaleFactorX);
 		
