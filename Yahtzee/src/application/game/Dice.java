@@ -41,9 +41,11 @@ public class Dice extends ImageView{
 						game.table.addDice(this);
 						game.removeDice(this);
 						game.addDice(new Dice(7,game));
+						game.scoresheet.showScores();
 					}else {
 						game.table.removeDice(this);
 						game.addDice(this);
+						game.scoresheet.showScores();
 					}
 					kept = !kept;
 				}
@@ -98,6 +100,7 @@ public class Dice extends ImageView{
 	public int roll() {
 		int num = (int)(Math.random()*6)+1;
 		this.setImage(dicePics[num-1]);
+		value = num;
 		return num;
 	}
 	

@@ -32,14 +32,19 @@ public class Game extends BorderPane{
 	private VBox leftLayout;
 	private Group diceRolls;
 	private Image background;
-	private Scoresheet scoresheet;
+	protected Scoresheet scoresheet;
 	protected Table table;
 	
 	public Game() {
 		dice = new ArrayList<Dice>();
 		for(int i = 0;i<5;i++)
 			dice.add(new Dice((int)(Math.random()*6)+1,this));
-		
+		try {
+			scoresheet = new Scoresheet(this);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		rollButton = new Button("Roll Dice");
 		rollButton.setOnAction(actionEvent-> {
 			rollDice();
@@ -61,6 +66,7 @@ public class Game extends BorderPane{
 				d.roll();
 		}
 		table.renderDice();
+		scoresheet.showScores();
 	}
 	
 	
@@ -126,7 +132,7 @@ public class Game extends BorderPane{
 
 		
 		rollButton.setTranslateY(548*scaleFactorY);
-		rollButton.setTranslateX(20*scaleFactorX);
+		rollButton.setTranslateX(18*scaleFactorX);
 		leftLayout.setPrefHeight(800 * scaleFactorY);
 		leftLayout.setPrefWidth(500 * scaleFactorX);
 		
@@ -211,9 +217,7 @@ public class Game extends BorderPane{
 		leftLayout.getChildren().addAll(dice);
 		this.setLeft(diceRolls);
 		
-		try {
-			scoresheet = new Scoresheet(this);
-		} catch (FileNotFoundException e) {	}
+		
 			this.setRight(scoresheet);
 			this.setCenter(table);
 			

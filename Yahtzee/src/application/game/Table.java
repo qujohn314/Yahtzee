@@ -24,10 +24,10 @@ public class Table extends Group{
 	private double baseHeight = 350;
 	private double baseWidth = 448;
 	private StackPane tableView;
-	private TilePane diceGrid,rolledGrid;
+	private TilePane diceGrid;
 	private Game game;
 	private VBox container,rollBox;
-	private ArrayList<Dice> fieldDice;
+	protected ArrayList<Dice> fieldDice;
 	private ImageView tablePic;
 	
 	public Table(Game g) throws FileNotFoundException {
@@ -48,13 +48,9 @@ public class Table extends Group{
 		diceGrid.setVgap(6*game.scaleFactorY);
 		diceGrid.setPrefColumns(5);
 		
-		rolledGrid = new TilePane();
-		rolledGrid.setHgap(6*game.scaleFactorX);
-		rolledGrid.setVgap(6*game.scaleFactorY);
-		rolledGrid.setPrefColumns(5);
-		rolledGrid.setPrefRows(1);
+		
 		rollBox.getChildren().add(diceGrid);
-		rollBox.getChildren().add(rolledGrid);
+		
 		
 		tableView.getChildren().add(tablePic);
 		tableView.getChildren().add(rollBox);
@@ -76,14 +72,9 @@ public class Table extends Group{
 		
 		tablePic.setFitHeight(baseHeight * game.scaleFactorY);
 		tablePic.setFitWidth(baseWidth * game.scaleFactorX);
-		diceGrid.setPadding(new Insets(20*game.scaleFactorY, 0, 0, 18*game.scaleFactorX));
+		diceGrid.setPadding(new Insets(10*game.scaleFactorY, 0, 0, 24*game.scaleFactorX));
 		diceGrid.setHgap(6*game.scaleFactorX);
 		diceGrid.setVgap(6*game.scaleFactorY);
-		
-		rolledGrid.setPadding(new Insets(25*game.scaleFactorY, 0, 0, 20*game.scaleFactorX));
-		rolledGrid.setHgap(6*game.scaleFactorX);
-		rolledGrid.setVgap(6*game.scaleFactorY);
-		
 	}
 	
 	protected void renderDice() {
@@ -102,7 +93,7 @@ public class Table extends Group{
 				diceGrid.getChildren().add(d);
 			}
 		}
-		
+
 	}
 	
 	protected ArrayList<Dice> getDice() {
@@ -113,10 +104,9 @@ public class Table extends Group{
 		d.setBaseHeight(75,game.scaleFactorX,game.scaleFactorX);
 		d.setBaseWidth(75,game.scaleFactorX,game.scaleFactorX);
 		fieldDice.add(d);
-		diceGrid.setPadding(new Insets(20*game.scaleFactorY, 0, 0, 20*game.scaleFactorX));
+		diceGrid.setPadding(new Insets(10*game.scaleFactorY, 0, 0, 24*game.scaleFactorX));
 		diceGrid.getChildren().add(d);
-	
-	
+		
 	}
 	
 	protected void removeDice(Dice d) {
