@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
@@ -18,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -72,23 +74,23 @@ public class Scoresheet extends Group{
 		scoreNames.put("Four Kind", new Score());
 		scoreNames.put("Full House", new Score());
 		scoreNames.put("Small", new Score());
-		scoreNames.get("Small").setTranslateY(-2);
+		scoreNames.get("Small").setTranslateY(-2*game.scaleFactorY);
 		scoreNames.put("Large", new Score());
-		scoreNames.get("Large").setTranslateY(-3);
+		scoreNames.get("Large").setTranslateY(-3*game.scaleFactorY);
 		scoreNames.put("Yahtzee", new Score());
-		scoreNames.get("Yahtzee").setTranslateY(-5);
+		scoreNames.get("Yahtzee").setTranslateY(-5*game.scaleFactorY);
 		scoreNames.put("Chance", new Score());
 		scoreNames.put("Yahtzee Count", new Score());
-		scoreNames.get("Yahtzee Count").setTranslateY(-3);
-		scoreNames.get("Yahtzee Count").setTranslateX(-5);
+		scoreNames.get("Yahtzee Count").setTranslateY(-3*game.scaleFactorY);
+		scoreNames.get("Yahtzee Count").setTranslateX(-5*game.scaleFactorX);
 		scoreNames.put("Yahtzee Bonus", new Score());
 		scoreNames.get("Yahtzee Bonus").name = "Yahtzee Bonus";
 		scoreNames.get("Yahtzee").name = "Yahtzee";
 		scoreNames.put("Total Bottom", new Score());
 		scoreNames.put("Total Top End", new Score());
-		scoreNames.get("Total Top End").setTranslateY(10);
+		scoreNames.get("Total Top End").setTranslateY(10*game.scaleFactorY);
 		scoreNames.put("Final", new Score());
-		scoreNames.get("Final").setTranslateY(12);
+		scoreNames.get("Final").setTranslateY(15*game.scaleFactorY);
 		
 		
 		scores.getChildren().add(scoreNames.get("Filler"));
@@ -133,9 +135,37 @@ public class Scoresheet extends Group{
 		this.setTranslateY(3 * game.scaleFactorY);
 		scoreView.setFitHeight(baseHeight * game.scaleFactorY);
 		scoreView.setFitWidth(baseWidth * game.scaleFactorX);
-		scores.setVgap(2.92 *game.scaleFactorY);
+		scores.setVgap(6 *game.scaleFactorY);
 		scores.setTranslateX(175*game.scaleFactorX);
 		scores.setPadding(new Insets(1*game.scaleFactorY, 0, 0,0));
+		for(Score s : scoreNames.values()) {
+			Double newFontSizeDouble = Math.hypot(game.getWidth()/40, game.getHeight())/40;
+	    	int newFontSizeInt = newFontSizeDouble.intValue();
+	    	s.setFont(Font.font(newFontSizeInt));
+	    	System.out.println(s.getFont().getSize());
+		}
+		scoreNames.get("Final").setTranslateY(7*game.scaleFactorY);
+		scoreNames.get("Small").setTranslateY(-5*game.scaleFactorY);
+		scoreNames.get("Large").setTranslateY(-6*game.scaleFactorY);
+		scoreNames.get("Three Kind").setTranslateY(-3*game.scaleFactorY);
+		scoreNames.get("Four Kind").setTranslateY(-4*game.scaleFactorY);
+		scoreNames.get("Yahtzee Bonus").setTranslateY(-5*game.scaleFactorY);
+		scoreNames.get("Full House").setTranslateY(-5*game.scaleFactorY);
+		scoreNames.get("Total Top End").setTranslateY(5*game.scaleFactorY);
+		scoreNames.get("Yahtzee Count").setTranslateY(-5*game.scaleFactorY);
+		boolean big = false;
+		for(Score s : scoreNames.values()) {
+			try {
+			if(Integer.parseInt(s.getText()) >= 100) 
+				big = true;
+			}catch(NumberFormatException e) {}
+		}
+		for(Score s : scoreNames.values()) {
+			if(big) 
+				s.setTranslateX(-5);	
+			else
+				s.setTranslateX(0);	
+		}
 	}
 	
 	protected void showScores() {
@@ -196,7 +226,19 @@ public class Scoresheet extends Group{
 			}
 		}
 		
-		
+		boolean big = false;
+		for(Score s : scoreNames.values()) {
+			try {
+			if(Integer.parseInt(s.getText()) >= 100) 
+				big = true;
+			}catch(NumberFormatException e) {}
+		}
+		for(Score s : scoreNames.values()) {
+			if(big) 
+				s.setTranslateX(-5);
+			else
+				s.setTranslateX(0);	
+		}
 	}
 	
 	protected void getTotals() {
@@ -242,6 +284,23 @@ public class Scoresheet extends Group{
 		scoreNames.get("Final").setText((scoreNames.get("Total Top Score").val+scoreNames.get("Total Bottom").val)+"");
 		scoreNames.get("Final").val = scoreNames.get("Total Top Score").val+scoreNames.get("Total Bottom").val;
 		scoreNames.get("Final").setFill(Color.BLACK);
+		scoreNames.get("Yahtzee Count").setFill(Color.BLACK);
+		boolean big = false;
+		
+		for(Score s : scoreNames.values()) {
+			try {
+			if(Integer.parseInt(s.getText()) >= 100) 
+				big = true;
+			}catch(NumberFormatException e) {}
+		}
+		for(Score s : scoreNames.values()) {
+			if(big) 
+				s.setTranslateX(-5);	
+			else
+				s.setTranslateX(0);	
+		}
+		
+			
 	}
 	
 	protected String diceSum(int num) {
@@ -427,6 +486,7 @@ public class Scoresheet extends Group{
 			val = 0;
 			scored = false;
 			name = "";
+			
 			this.setText("");
 			this.setFont(new Font(20));	
 			this.setFill(Color.DIMGREY);
@@ -471,5 +531,7 @@ public class Scoresheet extends Group{
 			this.setFont(new Font(20));	
 		
 		}
+		
+		
 	}
 }
