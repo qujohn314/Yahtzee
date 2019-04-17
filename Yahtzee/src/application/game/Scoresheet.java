@@ -41,6 +41,7 @@ public class Scoresheet extends Group{
 	
 	public Scoresheet(Game g) throws FileNotFoundException {
 		game = g;
+		
 		container = new VBox(10);
 		scoreStack = new StackPane();
 		scores = new TilePane(Orientation.VERTICAL);
@@ -429,6 +430,8 @@ public class Scoresheet extends Group{
 			this.setText("");
 			this.setFont(new Font(20));	
 			this.setFill(Color.DIMGREY);
+			
+			
 			this.addEventFilter(MouseEvent.MOUSE_CLICKED, event ->{
 				if(!scored) {
 					this.setFill(Color.BLACK);

@@ -17,7 +17,7 @@ public class Main extends Application {
 		try {
 			Game game = new Game();
 			
-		//	System.out.println(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+			//System.out.println(Toolkit.getDefaultToolkit().getScreenSize().getWidth()+" "+Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 			Scene scene = new Scene(game,800,600);
 			
 			
@@ -26,7 +26,9 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Quincy's Yahtzee");
 			primaryStage.show();
+			
 			primaryStage.setMaximized(true);
+			
 			primaryStage.setResizable(false);
 			
 			
