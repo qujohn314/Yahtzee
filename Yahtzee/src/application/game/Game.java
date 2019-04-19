@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -463,8 +464,19 @@ public class Game extends BorderPane{
 					
 				}
 			}
+			
 		});
-	
+		this.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event ->{
+			if(event.getCode() == KeyCode.R && event.isControlDown() && event.isAltDown()) {
+				highScores = new HighScores();
+				System.out.println("Scores reset");
+			}
+			if(event.getCode() == KeyCode.R && event.isControlDown() && event.isShiftDown()) {
+				reset();
+				System.out.println("Game Reset");
+			}
+		});
+
 		playerNameEntry.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event ->{
 			if(gameOver)	
 				playerNameEntry.setText("");
@@ -494,7 +506,7 @@ public class Game extends BorderPane{
 		}
 		
 		rescaleSizes();
-		
+		reset();
 		
 	}
 }

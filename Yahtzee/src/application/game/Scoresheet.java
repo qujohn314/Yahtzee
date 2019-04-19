@@ -526,7 +526,7 @@ public class Scoresheet extends Group{
 				if(!scored && game.canScore && !game.gameOver) {
 					this.setFill(Color.BLACK);
 					scored = true;
-					//game.canScore = false;
+					game.canScore = false;
 					game.rollCounter = 0;
 					val = Integer.parseInt(this.getText());
 					getTotals();
