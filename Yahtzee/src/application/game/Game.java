@@ -55,29 +55,38 @@ public class Game extends BorderPane{
 	private ImageView rollTextPic,turnTextPic,scorePic;
 	private HBox turnLabels;
 	private StackPane rollTextPane,stackScores;
-	protected boolean gameOver;
+	protected boolean gameOver,restart;
 	private TextField playerNameEntry;
 	private String playerName;
 	private HighScores highScores;
 	private GridPane scoreGrid;
-	private boolean scoresUpdate;
+	private boolean scoresUpdate,newGame;
 	
 	public Game() {
 		getHighScores();
+		newGame = false;
+		restart = false;
 		scoresUpdate = false;
 		scoreGrid = new GridPane();
 		dice = new ArrayList<Dice>();
 		for(int i = 0;i<5;i++)
-			dice.add(new Dice((int)(Math.random()*6)+1,this));
+			dice.add(new Dice(1,this));
 		try {
 			scoresheet = new Scoresheet(this);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rollButton = new Button("Roll Dice");
+		rollButton = new Button("Start Game");
 		rollButton.setOnAction(actionEvent-> {
-			rollDice();
+			if(!restart) {
+				if(!newGame) {
+					rollButton.setText("Roll Dice");
+					newGame = true;
+				}
+				rollDice();
+			}else 
+				reset();
+			
 		});
 		scaleFactorX = screenWidth /  baseWidth;
 		scaleFactorY = screenHeight / baseHeight;
@@ -150,6 +159,8 @@ public class Game extends BorderPane{
 			t.setFont(new Font("Rockwell", newFontSizeInt));
 			t2.setFont(new Font("Rockwell", newFontSizeInt));
 		}
+		rollButton.setText("Restart");
+		restart = true;
 		endGame();
 	}
 	
@@ -332,7 +343,38 @@ public class Game extends BorderPane{
 	
 	
 	
-	
+	public void reset() {
+		restart = false;
+		newGame = false;
+		scoresUpdate = false;
+		turn = 1;
+		rollCounter = 0;
+		canScore = false;
+		newTurn = false;
+		gameOver = false;
+		rollText.setText("Roll: 1");
+		turnText.setText("Turn: 1");
+		rollButton.setText("Start Game");
+		midBox.getChildren().set(1,table);
+		ArrayList<Dice> holder = new ArrayList<Dice>();
+		for(Dice d:dice)
+			holder.add(d);
+		for(Dice d:holder)
+			if(d.getValue()<7) {
+				removeDice(d);
+				table.addDice(d);
+			}
+		for(Dice d:table.fieldDice)
+			d.setValue(1);
+		
+		try {
+			scoresheet = new Scoresheet(this);
+			this.setRight(scoresheet);
+			scoreGrid.getChildren().clear();
+		} catch (FileNotFoundException e) {}
+		playerNameEntry.setText("Player Name");
+		rescaleSizes();
+	}
 	
 	public void init(Scene s) throws FileNotFoundException {
 		scene = s;
@@ -408,7 +450,7 @@ public class Game extends BorderPane{
 		playerNameEntry.setText("Player Name");
 		playerNameEntry.setMaxWidth(200);
 		playerNameEntry.setFont(new Font(25));
-		this.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event ->{
+		playerNameEntry.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event ->{
 			if(playerNameEntry.getText().length() > 12)
 				playerNameEntry.deletePreviousChar();
 			if(event.getCode() == KeyCode.ENTER) {
@@ -421,6 +463,11 @@ public class Game extends BorderPane{
 					
 				}
 			}
+		});
+	
+		playerNameEntry.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event ->{
+			if(gameOver)	
+				playerNameEntry.setText("");
 		});
 		
 			this.setLeft(diceRolls);

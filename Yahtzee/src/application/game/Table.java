@@ -103,7 +103,7 @@ public class Table extends Group{
 		d.setBaseHeight(75,game.scaleFactorX,game.scaleFactorX);
 		d.setBaseWidth(75,game.scaleFactorX,game.scaleFactorX);
 		fieldDice.add(d);
-
+	
 		diceGrid.setPadding(new Insets(10*game.scaleFactorY, 0, 0, 24*game.scaleFactorX));
 		diceGrid.getChildren().add(d);
 		
