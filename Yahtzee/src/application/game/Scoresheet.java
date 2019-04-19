@@ -37,7 +37,7 @@ public class Scoresheet extends Group{
 	private double baseHeight = 590;
 	private double baseWidth = 200;
 	private StackPane scoreStack;
-	private HashMap<String,Score> scoreNames;
+	protected HashMap<String,Score> scoreNames;
 	private TilePane scores;
 	private int yahtzeeCount;
 	
@@ -142,7 +142,7 @@ public class Scoresheet extends Group{
 			Double newFontSizeDouble = Math.hypot(game.getWidth()/40, game.getHeight())/40;
 	    	int newFontSizeInt = newFontSizeDouble.intValue();
 	    	s.setFont(Font.font(newFontSizeInt));
-	    	System.out.println(s.getFont().getSize());
+	    	
 		}
 		scoreNames.get("Final").setTranslateY(7*game.scaleFactorY);
 		scoreNames.get("Small").setTranslateY(-5*game.scaleFactorY);
@@ -186,26 +186,26 @@ public class Scoresheet extends Group{
 		if(fullHouse() && !scoreNames.get("Full House").scored) 
 			scoreNames.get("Full House").setText("25");
 		else if(!scoreNames.get("Full House").scored)
-			scoreNames.get("Full House").setText("");
+			scoreNames.get("Full House").setText("0");
 		
 		if(threeKind() > 0 && !scoreNames.get("Three Kind").scored)
 			scoreNames.get("Three Kind").setText(""+threeKind());
 		else  if(threeKind() <= 0 && !scoreNames.get("Three Kind").scored)
-			scoreNames.get("Three Kind").setText("");
+			scoreNames.get("Three Kind").setText("0");
 		if(fourKind() > 0 && !scoreNames.get("Four Kind").scored)
 			scoreNames.get("Four Kind").setText(""+fourKind());
 		else  if(fourKind() <= 0 && !scoreNames.get("Four Kind").scored)
-			scoreNames.get("Four Kind").setText("");
+			scoreNames.get("Four Kind").setText("0");
 		if(chance() > 0 && !scoreNames.get("Chance").scored) 
 			scoreNames.get("Chance").setText(""+chance());
 		if(smallStraight() > 0 && !scoreNames.get("Small").scored)
 			scoreNames.get("Small").setText(""+smallStraight());
 		else  if(smallStraight() <= 0 && !scoreNames.get("Small").scored)
-			scoreNames.get("Small").setText(""); 
+			scoreNames.get("Small").setText("0"); 
 		if(largeStraight() > 0 && !scoreNames.get("Large").scored)
 			scoreNames.get("Large").setText(""+largeStraight());
 		else if(largeStraight() <= 0 && !scoreNames.get("Large").scored)
-			scoreNames.get("Large").setText("");
+			scoreNames.get("Large").setText("0");
 		if(yahtzee() > 0 && !scoreNames.get("Yahtzee").scored)
 			scoreNames.get("Yahtzee").setText(""+yahtzee());
 		else if(yahtzee() > 0 && scoreNames.get("Yahtzee").scored) {
@@ -214,7 +214,7 @@ public class Scoresheet extends Group{
 			scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount)));
 		}
 		else if(yahtzee() <= 0 && !scoreNames.get("Yahtzee").scored) 
-			scoreNames.get("Yahtzee").setText("");
+			scoreNames.get("Yahtzee").setText("0");
 		else if(yahtzee() <= 0 && scoreNames.get("Yahtzee").scored) {
 			if(scoreNames.get("Yahtzee").val > 0) {
 					scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount-1)));
@@ -239,6 +239,10 @@ public class Scoresheet extends Group{
 			else
 				s.setTranslateX(0);	
 		}
+	}
+	
+	protected int getFinalScore() {
+		return Integer.parseInt(scoreNames.get("Final").getText());
 	}
 	
 	protected void getTotals() {
@@ -318,6 +322,10 @@ public class Scoresheet extends Group{
 		for(int i = 0;i<game.dice.size();i++) {
 			if(game.dice.get(i).getValue()<7)
 			sum += game.dice.get(i).getValue();
+		}
+		for(int i = 0;i<game.table.fieldDice.size();i++) {
+			if(game.table.fieldDice.get(i).getValue()<7)
+			sum += game.table.fieldDice.get(i).getValue();
 		}
 		return sum;
 	}
@@ -475,27 +483,51 @@ public class Scoresheet extends Group{
 			return false;
 		return true;
 	}
+
+	protected void checkGameOver() {
+		ArrayList<String> scoresToCheck = new ArrayList<String>();
+		for(String s : scoreNames.keySet()) {
+			if(!s.equals("Filler") && !s.equals("FillerTwo") && !s.equals("Final") && !s.equals("Total Top End") && !s.equals("Total Bottom")
+			&& !s.equals("Yahtzee Count") && !s.equals("Yahtzee Bonus") && !s.equals("Total Top") 
+			&& !s.equals("Top Bonus") && !s.equals("Total Top Score"))
+				scoresToCheck.add(s);
+		}
+		
+		for(String s : scoresToCheck)
+				if(!scoreNames.get(s).scored) {
+				//	System.out.println(s);
+					return;
+				}
+		
+		game.submitScore();
+		return;
+			
+	}
 	
 	private class Score extends Text{
 	
 		public boolean scored;
 		public int val;
 		public String name;
+		public boolean empty;
 		
 		public Score(){
+			empty = false;
 			val = 0;
 			scored = false;
 			name = "";
 			
 			this.setText("");
 			this.setFont(new Font(20));	
-			this.setFill(Color.DIMGREY);
+			this.setFill(Color.GREY);
 			
 			
 			this.addEventFilter(MouseEvent.MOUSE_CLICKED, event ->{
-				if(!scored) {
+				if(!scored && game.canScore && !game.gameOver) {
 					this.setFill(Color.BLACK);
 					scored = true;
+					game.canScore = false;
+					game.rollCounter = 0;
 					val = Integer.parseInt(this.getText());
 					getTotals();
 					if(this.name.equals("Yahtzee"))
@@ -517,8 +549,20 @@ public class Scoresheet extends Group{
 							else
 								scoreNames.get("Yahtzee Bonus").setFill(Color.BLACK);
 						}
-							
-					
+					ArrayList<Dice> tempDice = new ArrayList<Dice>();
+					for(Dice d : game.dice) {
+						if(d.getValue() < 7)
+						tempDice.add(d);
+					}
+					for(Dice d : tempDice) {
+						game.removeDice(d);
+						game.addDice(new Dice(7,game));
+						game.table.addDice(d);
+						d.kept = false;
+					}
+					game.newTurn = false;
+					game.turnText.setText("Turn: " + (++game.turn));
+					checkGameOver();
 				}
 			});
 		}
@@ -529,8 +573,10 @@ public class Scoresheet extends Group{
 			if(empty)
 				this.setText("");
 			this.setFont(new Font(20));	
-		
+			empty = true;
 		}
+		
+		
 		
 		
 	}

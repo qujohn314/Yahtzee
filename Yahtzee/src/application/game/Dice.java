@@ -36,7 +36,7 @@ public class Dice extends ImageView{
 			this.setImage(dicePics[v-1]);
 			this.setPreserveRatio(true);
 			this.addEventFilter(MouseEvent.MOUSE_CLICKED, event ->{
-				if(value >= 1 && value <= 6) {
+				if(value >= 1 && value <= 6 && game.newTurn && !game.gameOver) {
 					if(kept) {
 						game.table.addDice(this);
 						game.removeDice(this);
@@ -63,6 +63,7 @@ public class Dice extends ImageView{
 	protected void rescaleSizes(double scaleValueX, double scaleValueY) {
 		this.setFitHeight(baseHeight*scaleValueY);
 		this.setFitWidth(baseWidth*scaleValueX);
+		
 		
 	}
 	

@@ -26,13 +26,13 @@ public class Table extends Group{
 	private StackPane tableView;
 	private TilePane diceGrid;
 	private Game game;
-	private VBox container,rollBox;
+	private VBox rollBox;
 	protected ArrayList<Dice> fieldDice;
 	private ImageView tablePic;
 	
 	public Table(Game g) throws FileNotFoundException {
 		game = g;
-		container = new VBox(10);
+		
 		rollBox = new VBox(10);
 		
 		fieldDice = new ArrayList<Dice>();
@@ -56,19 +56,18 @@ public class Table extends Group{
 		tableView.getChildren().add(rollBox);
 	
 		//diceGrid.setStyle("-fx-grid-lines-visible: true;");
-		container.getChildren().add(tableView);
+		this.getChildren().add(tableView);
 	
-		this.getChildren().add(container);
+		
 		
 		rescaleSizes();
 	}
 	
 	protected void rescaleSizes() {
-		this.setTranslateX(-380 * game.scaleFactorX);
-		this.setTranslateY(-35 * game.scaleFactorY);
 		
+
 		for(Dice d : fieldDice)
-			d.rescaleSizes(game.scaleFactorX,game.scaleFactorY);
+			d.rescaleSizes(game.scaleFactorX,game.scaleFactorX);
 		
 		tablePic.setFitHeight(baseHeight * game.scaleFactorY);
 		tablePic.setFitWidth(baseWidth * game.scaleFactorX);
@@ -104,6 +103,7 @@ public class Table extends Group{
 		d.setBaseHeight(75,game.scaleFactorX,game.scaleFactorX);
 		d.setBaseWidth(75,game.scaleFactorX,game.scaleFactorX);
 		fieldDice.add(d);
+
 		diceGrid.setPadding(new Insets(10*game.scaleFactorY, 0, 0, 24*game.scaleFactorX));
 		diceGrid.getChildren().add(d);
 		

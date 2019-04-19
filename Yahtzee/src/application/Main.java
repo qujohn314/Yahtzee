@@ -19,23 +19,28 @@ public class Main extends Application {
 			
 			//System.out.println(Toolkit.getDefaultToolkit().getScreenSize().getWidth()+" "+Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 			Scene scene = new Scene(game,800,600);
-			
+			primaryStage.setMaximized(true);
 			
 			game.init(scene);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Quincy's Yahtzee");
+		
 			primaryStage.show();
 			
-			primaryStage.setMaximized(true);
+			
 			
 			primaryStage.setResizable(false);
-			
+			primaryStage.setOnCloseRequest(event -> {
+				game.endGame();
+			});
 			
 			primaryStage.getIcons().add(new Image(new FileInputStream("src/res/pics/dice5.png")));
+		
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	
