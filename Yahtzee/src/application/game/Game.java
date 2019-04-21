@@ -56,7 +56,7 @@ public class Game extends BorderPane{
 	private ImageView rollTextPic,turnTextPic,scorePic;
 	private HBox turnLabels;
 	private StackPane rollTextPane,stackScores;
-	protected boolean gameOver,restart;
+	protected boolean gameOver,restart,hack,notSus;
 	private TextField playerNameEntry;
 	private String playerName;
 	private HighScores highScores;
@@ -68,6 +68,8 @@ public class Game extends BorderPane{
 		newGame = false;
 		restart = false;
 		scoresUpdate = false;
+		notSus = false;
+		hack = false;
 		scoreGrid = new GridPane();
 		dice = new ArrayList<Dice>();
 		for(int i = 0;i<5;i++)
@@ -103,22 +105,50 @@ public class Game extends BorderPane{
 	}
 	
 	public void rollDice() {
-		
-		if(!gameOver && rollCounter < 3 && table.fieldDice.size() > 0) {
+		boolean noCheat = true;
+		int num = (int)(Math.random()*6)+1;
+		if(!gameOver && rollCounter < 3 && table.fieldDice.size() > 0 && !scoresheet.yahtzee) {
+			scoresheet.yahtzee = false;
 			rollText.setText("Roll: " + (rollCounter+1));
 			newTurn = true;
+			
 			if(!canScore)
 				canScore = true;
 			for(Dice d : table.getDice()) {
-				if(d.getValue() >= 1 && d.getValue() <= 6)
+				if(d.getValue() >= 1 && d.getValue() <= 6) {
+					if(hack) {
+						if(sameDice() && !notSus) {
+							noCheat = false;
+						}
+						if(!noCheat) {
+							if(dice.get(0).getValue() != 7)
+								d.setValue(dice.get(0).getValue());
+							else
+								d.setValue(num);
+					}
+					if(noCheat)
+						d.roll();
+				}else
 					d.roll();
+				}
 			}
+			if(noCheat)
+				notSus = false;
+			else
+				notSus = true;
 			rollCounter++;
 		}
 		table.renderDice();
 		scoresheet.showScores();
 	}
 	
+	private boolean sameDice() {
+		int num = dice.get(0).getValue();
+		for(int i =0;i<dice.size();i++)
+			if(dice.get(i).getValue() != num && dice.get(i).getValue() <= 6 && dice.get(i).getValue()>=1)
+				return false;
+		return true;
+	}
 	
 	protected void addDice(Dice d) {
 		if(d.getValue() >= 1 && d.getValue() <= 6)
@@ -358,15 +388,26 @@ public class Game extends BorderPane{
 		rollButton.setText("Start Game");
 		midBox.getChildren().set(1,table);
 		ArrayList<Dice> holder = new ArrayList<Dice>();
+		ArrayList<Dice> tableHolder = new ArrayList<Dice>();
+		
 		for(Dice d:dice)
 			holder.add(d);
+		for(Dice d:table.fieldDice)
+			tableHolder.add(d);
+		for(Dice d:tableHolder)
+			table.removeDice(d);
 		for(Dice d:holder)
 			if(d.getValue()<7) {
 				removeDice(d);
+				addDice(new Dice(7,this));
 				table.addDice(d);
 			}
-		for(Dice d:table.fieldDice)
+		for(Dice d:tableHolder)
+			table.addDice(d);
+		for(Dice d:table.fieldDice) {
 			d.setValue(1);
+			d.kept = false;
+		}
 		
 		try {
 			scoresheet = new Scoresheet(this);
@@ -452,8 +493,7 @@ public class Game extends BorderPane{
 		playerNameEntry.setMaxWidth(200);
 		playerNameEntry.setFont(new Font(25));
 		playerNameEntry.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event ->{
-			if(playerNameEntry.getText().length() > 12)
-				playerNameEntry.deletePreviousChar();
+			
 			if(event.getCode() == KeyCode.ENTER) {
 				if(!playerNameEntry.getText().equals("")) {
 					playerName = playerNameEntry.getText();
@@ -463,6 +503,19 @@ public class Game extends BorderPane{
 					showScores();
 					
 				}
+			}
+		});
+		playerNameEntry.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				try {
+					if(newValue.length() > 12) 
+						playerNameEntry.setText(oldValue);
+				}catch(Exception e) {
+					playerNameEntry.setText(oldValue);
+				}
+				
 			}
 			
 		});
@@ -475,10 +528,13 @@ public class Game extends BorderPane{
 				reset();
 				System.out.println("Game Reset");
 			}
+			if(event.getCode() == KeyCode.Y && event.isAltDown()) {
+				hack = !hack;
+			}
 		});
 
 		playerNameEntry.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event ->{
-			if(gameOver)	
+			if(gameOver && playerNameEntry.getText().equals("Player Name"))	
 				playerNameEntry.setText("");
 		});
 		

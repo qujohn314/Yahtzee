@@ -40,10 +40,13 @@ public class Scoresheet extends Group{
 	protected HashMap<String,Score> scoreNames;
 	private TilePane scores;
 	private int yahtzeeCount;
+	protected boolean yahtzee;
+	private int yahtzeeVal;
 	
 	public Scoresheet(Game g) throws FileNotFoundException {
 		game = g;
-		
+		yahtzeeVal = 1;
+		yahtzee = false;
 		container = new VBox(10);
 		scoreStack = new StackPane();
 		scores = new TilePane(Orientation.VERTICAL);
@@ -116,7 +119,9 @@ public class Scoresheet extends Group{
 		scores.getChildren().add(scoreNames.get("Total Bottom"));
 		scores.getChildren().add(scoreNames.get("Total Top End"));
 		scores.getChildren().add(scoreNames.get("Final"));
-		
+		scoreNames.get("Yahtzee Bonus").scored = true;
+		scoreNames.get("Yahtzee Bonus").setFill(Color.BLACK);
+		scoreNames.get("Yahtzee Count").scored = true;
 		
 		
 		scoreStack.getChildren().add(scoreView);
@@ -170,6 +175,28 @@ public class Scoresheet extends Group{
 	
 	protected void showScores() {
 		
+		if(yahtzee() > 0 && !scoreNames.get("Yahtzee").scored) {
+			scoreNames.get("Yahtzee").setText(""+yahtzee());
+			yahtzee = true;
+		}
+		else if(yahtzee() > 0 && scoreNames.get("Yahtzee").scored) {
+			if(yahtzee == false) {
+				yahtzee = true;
+				scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount)));
+				scoreNames.get("Yahtzee Bonus").val = 100*yahtzeeCount;
+				yahtzeeCount++;
+				String tally = "";
+				for(int i = 1;i<yahtzeeCount;i++) {
+					tally+="I";
+				}
+				scoreNames.get("Yahtzee Count").setText(tally);
+				getTotals();
+			}
+		}
+		else if(yahtzee() <= 0 && !scoreNames.get("Yahtzee").scored) 
+			scoreNames.get("Yahtzee").setText("0");
+	
+		
 		if(!scoreNames.get("Ones").scored)
 			scoreNames.get("Ones").setText(""+diceSum(1));
 		if(!scoreNames.get("Twos").scored)
@@ -206,25 +233,7 @@ public class Scoresheet extends Group{
 			scoreNames.get("Large").setText(""+largeStraight());
 		else if(largeStraight() <= 0 && !scoreNames.get("Large").scored)
 			scoreNames.get("Large").setText("0");
-		if(yahtzee() > 0 && !scoreNames.get("Yahtzee").scored)
-			scoreNames.get("Yahtzee").setText(""+yahtzee());
-		else if(yahtzee() > 0 && scoreNames.get("Yahtzee").scored) {
-			scoreNames.get("Yahtzee Bonus").scored = false;
-			scoreNames.get("Yahtzee Bonus").setFill(Color.DIMGREY);
-			scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount)));
-		}
-		else if(yahtzee() <= 0 && !scoreNames.get("Yahtzee").scored) 
-			scoreNames.get("Yahtzee").setText("0");
-		else if(yahtzee() <= 0 && scoreNames.get("Yahtzee").scored) {
-			if(scoreNames.get("Yahtzee").val > 0) {
-					scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount-1)));
-					scoreNames.get("Yahtzee Bonus").val = 100*(yahtzeeCount-1);
-				if(scoreNames.get("Yahtzee Bonus").val == 0)
-					scoreNames.get("Yahtzee Bonus").setText("");
-				else
-					scoreNames.get("Yahtzee Bonus").setFill(Color.BLACK);
-			}
-		}
+	
 		
 		boolean big = false;
 		for(Score s : scoreNames.values()) {
@@ -307,11 +316,30 @@ public class Scoresheet extends Group{
 			
 	}
 	
+	private boolean hasScoredTop(int num) {
+		if(num == 1 && scoreNames.get("Ones").scored)
+			return true;
+		if(num == 2 && scoreNames.get("Twos").scored)
+			return true;
+		if(num == 3 && scoreNames.get("Threes").scored)
+			return true;
+		if(num == 4 && scoreNames.get("Fours").scored)
+			return true;
+		if(num == 5 && scoreNames.get("Fives").scored)
+			return true;
+		if(num == 6 && scoreNames.get("Sixes").scored)
+			return true;
+		return false;
+	}
+	
 	protected String diceSum(int num) {
 		int sum = 0;
 		for(int i = 0;i<game.dice.size();i++)
 			if(game.dice.get(i).getValue() == num)
 				sum += game.dice.get(i).getValue();
+		for(int i = 0;i<game.table.fieldDice.size();i++)
+			if(game.table.fieldDice.get(i).getValue() == num)
+				sum += game.table.fieldDice.get(i).getValue();
 		if(sum == 0)
 			return "0";
 		return sum + "";
@@ -331,6 +359,11 @@ public class Scoresheet extends Group{
 	}
 	
 	protected int threeKind() {
+		if(yahtzee && hasScoredTop(yahtzeeVal) && scoreNames.get("Yahtzee").scored && Integer.parseInt(scoreNames.get("Yahtzee").getText())!=0)
+			if(game.dice.get(0).getValue() != 7)
+				return 5*game.dice.get(0).getValue();
+			else
+				return 5*game.table.fieldDice.get(0).getValue();
 		int threeCount = 0;
 		for(int i = 1;i<=6;i++) {
 			for(int ii = 0;ii<game.dice.size();ii++) {
@@ -358,7 +391,8 @@ public class Scoresheet extends Group{
 	}
 	protected int smallStraight() {
 		int count = 0;
-	
+		if(yahtzee && scoreNames.get("Yahtzee").scored && Integer.parseInt(scoreNames.get("Yahtzee").getText())!=0 && hasScoredTop(yahtzeeVal))
+			return 30;
 		ArrayList<Integer> diceValues = new ArrayList<Integer>();
 		for(int i = 0;i<game.dice.size();i++) 
 			diceValues.add(game.dice.get(i).getValue());
@@ -379,7 +413,8 @@ public class Scoresheet extends Group{
 	
 	protected int largeStraight() {
 		int count = 0;
-	
+		if(yahtzee && scoreNames.get("Yahtzee").scored && Integer.parseInt(scoreNames.get("Yahtzee").getText())!=0 && hasScoredTop(yahtzeeVal))
+			return 40;
 		ArrayList<Integer> diceValues = new ArrayList<Integer>();
 		for(int i = 0;i<game.dice.size();i++) 
 			diceValues.add(game.dice.get(i).getValue());
@@ -400,24 +435,30 @@ public class Scoresheet extends Group{
 	protected int yahtzee() {
 		int fiveCount = 0;
 		for(int i = 1;i<=6;i++) {
+			yahtzeeVal = i;
 			for(int ii = 0;ii<game.dice.size();ii++) {
-				if(game.dice.get(ii).getValue()== i) {
+				if(game.dice.get(ii).getValue() == i)
 					fiveCount++;
-				}
-				if(fiveCount >= 5) 
-					break;
 			}
-			if(fiveCount >= 5)
-				break;
+			for(int ii = 0;ii<game.table.fieldDice.size();ii++) {
+				if(game.table.fieldDice.get(ii).getValue() == i)
+					fiveCount++;
+			}
+			if(fiveCount == 5) {
+				return 50;
+			}
 			fiveCount = 0;
+			
 		}
-		if(fiveCount < 5)
-			return 0;
-	
-		return 50;
+		return 0;
 	}
 	
 	protected int fourKind() {
+		if(yahtzee  && scoreNames.get("Yahtzee").scored && Integer.parseInt(scoreNames.get("Yahtzee").getText())!=0 && hasScoredTop(yahtzeeVal))
+			if(game.dice.get(0).getValue() != 7)
+				return 5*game.dice.get(0).getValue();
+			else
+				return 5*game.table.fieldDice.get(0).getValue();
 		int fourCount = 0;
 		for(int i = 1;i<=6;i++) {
 			for(int ii = 0;ii<game.dice.size();ii++) {
@@ -448,6 +489,8 @@ public class Scoresheet extends Group{
 		int threeCount = 0;
 		int threeNum = 0;
 		int twoCount = 0;
+		if(yahtzee && scoreNames.get("Yahtzee").scored && Integer.parseInt(scoreNames.get("Yahtzee").getText())!=0 && hasScoredTop(yahtzeeVal))
+			return true;
 		for(int i = 1;i<=6;i++) {
 			for(int ii = 0;ii<game.dice.size();ii++) {
 				if(game.dice.get(ii).getValue()== i) {
@@ -527,19 +570,13 @@ public class Scoresheet extends Group{
 					this.setFill(Color.BLACK);
 					scored = true;
 					game.canScore = false;
+					yahtzee = false;
 					game.rollCounter = 0;
 					val = Integer.parseInt(this.getText());
 					getTotals();
 					if(this.name.equals("Yahtzee"))
 						yahtzeeCount++;
-					if(this.name.equals("Yahtzee Bonus")) {
-						yahtzeeCount++;
-						String tally = "";
-						for(int i = 1;i<yahtzeeCount;i++) {
-							tally+="I";
-						}
-						scoreNames.get("Yahtzee Count").setText(tally);
-					}
+					
 					else if(!this.name.equals("Yahtzee Bonus")) 
 						if(scoreNames.get("Yahtzee").val > 0) {
 							scoreNames.get("Yahtzee Bonus").setText(""+(100*(yahtzeeCount-1)));
