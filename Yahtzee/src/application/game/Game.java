@@ -41,7 +41,7 @@ public class Game extends BorderPane{
 	private Scene scene;
 	protected ArrayList<Dice> dice;
 	private static final String BACKGROUND = "background.jpg";
-	private Button rollButton;
+	protected Button rollButton;
 	private double screenHeight,screenWidth;
 	private static double baseWidth ,baseHeight;
 	protected double scaleFactorX,scaleFactorY;
@@ -107,6 +107,7 @@ public class Game extends BorderPane{
 	public void rollDice() {
 		boolean noCheat = true;
 		int num = (int)(Math.random()*6)+1;
+		rollButton.setText("Roll Dice");
 		if(!gameOver && rollCounter < 3 && table.fieldDice.size() > 0 && !scoresheet.yahtzee) {
 			scoresheet.yahtzee = false;
 			rollText.setText("Roll: " + (rollCounter+1));
@@ -520,7 +521,7 @@ public class Game extends BorderPane{
 			
 		});
 		this.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event ->{
-			if(event.getCode() == KeyCode.R && event.isControlDown() && event.isAltDown()) {
+			if(event.getCode() == KeyCode.R && event.isShiftDown() && event.isAltDown()) {
 				highScores = new HighScores();
 				System.out.println("Scores reset");
 			}

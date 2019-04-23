@@ -567,6 +567,7 @@ public class Scoresheet extends Group{
 			
 			this.addEventFilter(MouseEvent.MOUSE_CLICKED, event ->{
 				if(!scored && game.canScore && !game.gameOver) {
+					game.rollButton.setText("Start Turn");
 					this.setFill(Color.BLACK);
 					scored = true;
 					game.canScore = false;
