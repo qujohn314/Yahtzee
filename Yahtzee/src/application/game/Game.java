@@ -1,6 +1,7 @@
 package application.game;
 
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -33,6 +34,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -62,9 +65,11 @@ public class Game extends BorderPane{
 	private HighScores highScores;
 	private GridPane scoreGrid;
 	private boolean scoresUpdate,newGame;
+	private MediaPlayer sounds;
 	
 	public Game() {
 		getHighScores();
+		
 		newGame = false;
 		restart = false;
 		scoresUpdate = false;
@@ -110,6 +115,7 @@ public class Game extends BorderPane{
 		rollButton.setText("Roll Dice");
 		if(!gameOver && rollCounter < 3 && table.fieldDice.size() > 0 && !scoresheet.yahtzee) {
 			scoresheet.yahtzee = false;
+			playSound("Roll.mp3");
 			rollText.setText("Roll: " + (rollCounter+1));
 			newTurn = true;
 			
@@ -249,7 +255,11 @@ public class Game extends BorderPane{
 		}
 	}
 	
-	
+	protected void playSound(String s) {
+		Media media = new Media(new File("src/res/sounds/" + s).toURI().toString());
+		sounds = new MediaPlayer(media);
+		sounds.play();
+	}
 	
 	
 	
