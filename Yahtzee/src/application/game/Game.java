@@ -306,7 +306,7 @@ public class Game extends BorderPane{
 		leftLayout.setPrefHeight(800 * scaleFactorY);
 		leftLayout.setPrefWidth(500 * scaleFactorX);
 		
-		rollButton.setPrefSize(85*scaleFactorX > 100 ? 100 : 85*scaleFactorX, 40*scaleFactorY);
+		rollButton.setPrefSize(85*scaleFactorX > 100 ? 70*scaleFactorX : 85*scaleFactorX, 40*scaleFactorY);
 		Double newFontSizeDouble = Math.hypot(this.getWidth()/45, this.getHeight())/45;
     	int newFontSizeInt = newFontSizeDouble.intValue();
     	rollButton.setFont(Font.font(newFontSizeInt));
