@@ -1,2 +1,2 @@
 # BasicYahtzee
-Comp. Sci 3 JavaFX practice
+Project for JavaFX practice
