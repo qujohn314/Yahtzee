@@ -1,4 +1,6 @@
 # BasicYahtzee
-Project for JavaFX practice
+Project for JavaFX practice.
 
-<p>hi<p>
+Includes a leaderboard. All Yahtzee functionality. 
+
+There are built in cheat codes, but you'll have to data mine for them :P
