@@ -1,6 +1,5 @@
 package application.game;
 
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,10 +12,6 @@ import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -25,7 +20,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
@@ -262,18 +256,6 @@ public class Game extends BorderPane{
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public double getBaseWidth() {
 		return baseWidth;
 	}
@@ -281,109 +263,81 @@ public class Game extends BorderPane{
 	public double getBaseHeight() {
 		return baseHeight;
 	}
-	
+
 	public void rescaleSizes() {
-		
+
 		scaleFactorX = screenWidth /  baseWidth;
 		scaleFactorY = screenHeight / baseHeight;
-		
+
 		scorePic.setFitWidth(448*scaleFactorX);
 		scorePic.setFitHeight(350*scaleFactorY);
-	
+
 		diceRolls.setTranslateY(10*scaleFactorY);
 		diceRolls.setTranslateX(10*scaleFactorX);
-		
+
 		midBox.setTranslateX(-380 * scaleFactorX);
-		
+
 		this.getCenter().setTranslateY(140*scaleFactorY);
-		
-		for(Node d : dice) 
+
+		for(Node d : dice)
 			((Dice)d).rescaleSizes(scaleFactorX,scaleFactorY);
 
-		
+
 		rollButton.setTranslateY(543*scaleFactorY);
 		rollButton.setTranslateX(6*scaleFactorX);
 		leftLayout.setPrefHeight(800 * scaleFactorY);
 		leftLayout.setPrefWidth(500 * scaleFactorX);
-		
+
 		rollButton.setPrefSize(85*scaleFactorX > 100 ? 70*scaleFactorX : 85*scaleFactorX, 40*scaleFactorY);
 		Double newFontSizeDouble = Math.hypot(this.getWidth()/45, this.getHeight())/45;
     	int newFontSizeInt = newFontSizeDouble.intValue();
     	rollButton.setFont(Font.font(newFontSizeInt));
-  
-    	
+
+
 		if(screenHeight < 451 || screenWidth < 300)
 			this.setBackground(new Background(new BackgroundImage(background,null,null,null,null)));
 		else this.setBackground(new Background(new BackgroundImage(background,BackgroundRepeat.ROUND,BackgroundRepeat.ROUND,null,null)));
 		rollTextPic.setFitWidth(110 * scaleFactorX);
 		rollTextPic.setFitHeight(50 * scaleFactorY);
 		rollTextPane.setTranslateX(228 * scaleFactorX);
-		
+
 		turnTextPic.setFitWidth(110 * scaleFactorX);
 		turnTextPic.setFitHeight(50 * scaleFactorY);
-		
-		
+
+
 		scoreGrid.setVgap(10*scaleFactorY);
 		scoreGrid.setHgap(100*scaleFactorX);
-		
+
 		Double newFontSizeDouble2 = (this.getWidth()/35);
     	int newFontSizeInt2 = newFontSizeDouble2.intValue();
-    	rollText.setFont(Font.font("Stencil",newFontSizeInt2));	
+    	rollText.setFont(Font.font("Stencil",newFontSizeInt2));
     	turnText.setFont(Font.font("Stencil",newFontSizeInt2));
-    	
-    	
+
+
     	int textCount = 0;
     	scoreGrid.setTranslateY(10*scaleFactorY);
 		scoreGrid.setTranslateX(100*scaleFactorX);
     	if(scoresUpdate) {
     	for (int i = 0;i<highScores.scores.size();i++) {
-			
+
 			Text t = (Text)scoreGrid.getChildren().get(textCount);
 			Text t2 = (Text)scoreGrid.getChildren().get(textCount+1);
 			textCount+=2;
-			
-			
+
+
 	    	Double newFontSizeDouble3 = (this.getHeight()/30);
 	    	int newFontSizeInt3 = newFontSizeDouble3.intValue();
-				
+
 			t.setFont(new Font("Rockwell", newFontSizeInt3));
 			t2.setFont(new Font("Rockwell", newFontSizeInt3));
 		}
     	}
-		
+
 		scoresheet.rescaleSizes();
 		table.rescaleSizes();
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	public void reset() {
 		restart = false;
